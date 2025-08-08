@@ -1,0 +1,15 @@
+{
+  "name": "@generaltranslation/codex",
+  "version": "1.0.0",
+  "description": "TS SDK for codex",
+  "license": "ISC",
+  "author": "",
+  "type": "module",
+  "main": "dist/sdk.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "dependencies": {
+    "@openai/codex": "^0.1.2505291658"
+  }
+}
