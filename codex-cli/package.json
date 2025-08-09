@@ -6,12 +6,16 @@
     "codex": "bin/codex.js"
   },
   "type": "module",
+  "exports": {
+    ".": "./src/sdk/index.js"
+  },
   "engines": {
     "node": ">=20"
   },
   "files": [
     "bin",
-    "dist"
+    "dist",
+    "src/sdk"
   ],
   "repository": {
     "type": "git",
