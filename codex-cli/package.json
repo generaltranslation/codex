@@ -9,17 +9,16 @@
   "engines": {
     "node": ">=20"
   },
-  "exports": {
-    ".": "./src/sdk/index.js"
-  },
-  "dependencies": {
-    "@generaltranslation/codex": "^0.0.2"
-  },
   "files": [
     "bin",
-    "dist",
-    "src/sdk"
+    "dist"
   ],
+  "exports": {
+    ".": "dist/sdk.js"
+  },
+  "scripts": {
+    "build": "tsc"
+  },
   "repository": {
     "type": "git",
     "url": "git+https://github.com/openai/codex.git"
