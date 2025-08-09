@@ -1,6 +1,6 @@
 {
   "name": "@generaltranslation/codex",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "description": "TS SDK for Codex",
   "license": "ISC",
   "author": "",
@@ -29,9 +29,9 @@
     "test": "vitest run",
     "test:watch": "vitest --watch",
     "release": "npm run build:clean && npm publish",
-    "release:alpha": "npm run build:clean && npm publish --tag alpha",
-    "release:beta": "npm run build:clean && npm publish --tag beta",
-    "release:latest": "npm run build:clean && npm publish --tag latest"
+    "release:alpha": "npm run build:clean && npm publish --tag alpha --access public",
+    "release:beta": "npm run build:clean && npm publish --tag beta --access public",
+    "release:latest": "npm run build:clean && npm publish --tag latest --access public"
   },
   "dependencies": {
     "@openai/codex": "^0.16.0"
