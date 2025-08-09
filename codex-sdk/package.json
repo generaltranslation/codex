@@ -34,7 +34,7 @@
     "release:latest": "npm run build:clean && npm publish --tag latest --access public"
   },
   "dependencies": {
-    "@openai/codex": "^0.2.0"
+    "@openai/codex": "^0.20.0"
   },
   "devDependencies": {
     "@types/node": "^22.0.0",
