@@ -1,4 +1,4 @@
-# codex-cli-sdk
+# Codex CLI SDK
 
 > A TypeScript SDK that lets you **run OpenAI Codex CLI programmatically** using the **same API style as the Claude Code TypeScript SDK** (e.g. `query()` returning an async iterator).
 > Under the hood, it shells out to the `codex` binary (`codex exec`), streams output, and yields structured events.
