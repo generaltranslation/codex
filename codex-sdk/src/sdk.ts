@@ -1,12 +1,9 @@
-import {
-  AgentProcessError,
-  AgentSpawnError,
-  UserAbortError,
-} from "./errors.js";
 import { SDKOutputEvent, Options } from "./types.js";
 import { spawn } from "child_process";
 
 export { SDKOutputEvent, Options };
+
+export class AbortError extends Error {}
 
 class AsyncQueue<T> implements AsyncIterable<T> {
   private q: Array<T | Error | symbol> = [];
@@ -73,7 +70,7 @@ class AsyncQueue<T> implements AsyncIterable<T> {
   }
 }
 
-export async function* run({
+export async function* query({
   prompt,
   abortController = new AbortController(),
   options = {},
@@ -151,42 +148,24 @@ export async function* run({
   });
 
   const closePromise = new Promise<void>((resolve, reject) => {
-    child.on("close", (code: number | null, signal: NodeJS.Signals | null) => {
+    child.on("close", (code: number | null) => {
       cleanup();
-      if (signal === "SIGTERM" || signal === "SIGKILL") {
-        if (abortController.signal.aborted) {
-          reject(new UserAbortError(`Codex was aborted by user`));
-        } else {
-          reject(
-            new AgentProcessError(
-              `Codex was terminated with signal ${signal}`,
-              code ?? undefined,
-            ),
-          );
-        }
-      } else if (code === 0) {
-        debugLog(`Codex exited with code ${code}`);
-        resolve();
+      if (abortController.signal.aborted) {
+        reject(new AbortError("Codex process aborted by user"));
+      }
+      if (code !== 0) {
+        reject(new Error(`Codex process exited with code ${code}`));
       } else {
-        const msg = `Codex exited with code ${code}`;
-        debugLog(msg);
-        reject(new AgentProcessError(msg, code ?? undefined));
+        resolve();
       }
     });
 
     child.on("error", (error) => {
       cleanup();
-      if (error?.name === "AbortError") {
-        if (abortController.signal.aborted) {
-          reject(new UserAbortError(`Codex was aborted by user`));
-        } else {
-          reject(new UserAbortError(`Codex was aborted`));
-        }
+      if (abortController.signal.aborted) {
+        reject(new AbortError("Codex process aborted by user"));
       } else {
-        debugLog(`failed to run Codex: ${error?.message}`);
-        reject(
-          new AgentSpawnError(`failed to run Codex: ${error?.message}`, error),
-        );
+        reject(new Error(`Codex process exited with error: ${error.message}`));
       }
     });
   });
