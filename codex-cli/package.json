@@ -1,6 +1,6 @@
 {
-  "name": "@openai/codex",
-  "version": "0.0.0-dev",
+  "name": "@generaltranslation/codex",
+  "version": "0.0.4-alpha.1",
   "license": "Apache-2.0",
   "bin": {
     "codex": "bin/codex.js"
@@ -14,10 +14,17 @@
     "dist"
   ],
   "exports": {
-    ".": "dist/sdk.js"
+    ".": {
+      "types": "./dist/sdk.d.ts",
+      "import": "./dist/sdk.js",
+      "default": "./dist/sdk.js"
+    }
   },
   "scripts": {
-    "build": "tsc"
+    "build": "tsc",
+    "release:alpha": "npm run build && npm publish --tag alpha --access public",
+    "release:beta": "npm run build && npm publish --tag beta --access public",
+    "release:latest": "npm run build && npm publish --tag latest --access public"
   },
   "repository": {
     "type": "git",
