@@ -1,0 +1,186 @@
+name: Release
+
+on:
+  push:
+    branches:
+      - main
+
+permissions:
+  contents: write
+  pull-requests: write
+  packages: write
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  rust-test:
+    name: Rust tests
+    runs-on: ubuntu-24.04
+    defaults:
+      run:
+        working-directory: codex-rs
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Rust
+        uses: dtolnay/rust-toolchain@1.88
+
+      - name: Cache cargo
+        uses: actions/cache@v4
+        with:
+          path: |
+            ~/.cargo/bin/
+            ~/.cargo/registry/index/
+            ~/.cargo/registry/cache/
+            ~/.cargo/git/db/
+            ${{ github.workspace }}/codex-rs/target/
+          key: cargo-test-${{ runner.os }}-${{ hashFiles('**/Cargo.lock') }}
+
+      - name: Cargo test
+        run: cargo test --workspace --all-targets --all-features
+
+  rust-build:
+    needs: rust-test
+    name: Build ${{ matrix.target }}
+    runs-on: ${{ matrix.runner }}
+    timeout-minutes: 30
+    defaults:
+      run:
+        working-directory: codex-rs
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - runner: macos-14
+            target: aarch64-apple-darwin
+          - runner: macos-14
+            target: x86_64-apple-darwin
+          - runner: ubuntu-24.04
+            target: x86_64-unknown-linux-musl
+          - runner: ubuntu-24.04
+            target: x86_64-unknown-linux-gnu
+          - runner: ubuntu-24.04-arm
+            target: aarch64-unknown-linux-musl
+          - runner: ubuntu-24.04-arm
+            target: aarch64-unknown-linux-gnu
+          - runner: windows-latest
+            target: x86_64-pc-windows-msvc
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Rust
+        uses: dtolnay/rust-toolchain@1.88
+        with:
+          targets: ${{ matrix.target }}
+
+      - name: Cache cargo
+        uses: actions/cache@v4
+        with:
+          path: |
+            ~/.cargo/bin/
+            ~/.cargo/registry/index/
+            ~/.cargo/registry/cache/
+            ~/.cargo/git/db/
+            ${{ github.workspace }}/codex-rs/target/
+          key: cargo-build-${{ matrix.runner }}-${{ matrix.target }}-${{ hashFiles('**/Cargo.lock') }}
+
+      - name: Install musl tools (Linux musl targets)
+        if: ${{ matrix.target == 'x86_64-unknown-linux-musl' || matrix.target == 'aarch64-unknown-linux-musl' }}
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y musl-tools pkg-config
+
+      - name: Build codex
+        run: cargo build --target ${{ matrix.target }} --release --bin codex
+
+      - name: Prepare artifact
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p dist/${{ matrix.target }}
+          if [[ "${{ matrix.runner }}" == windows* ]]; then
+            cp target/${{ matrix.target }}/release/codex.exe "dist/${{ matrix.target }}/codex-${{ matrix.target }}.exe"
+          else
+            cp target/${{ matrix.target }}/release/codex "dist/${{ matrix.target }}/codex-${{ matrix.target }}"
+            chmod +x "dist/${{ matrix.target }}/codex-${{ matrix.target }}"
+          fi
+
+      - name: Upload artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: ${{ matrix.target }}
+          path: codex-rs/dist/${{ matrix.target }}/*
+
+  publish:
+    needs: rust-build
+    name: Publish codex-cli to npm and GitHub Packages
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Download Rust binaries
+        uses: actions/download-artifact@v4
+        with:
+          path: bin-artifacts
+
+      - name: Stage binaries into codex-cli/bin
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p codex-cli/bin
+          shopt -s nullglob
+          for f in bin-artifacts/*/*; do
+            base="$(basename "$f")"
+            cp "$f" "codex-cli/bin/$base"
+          done
+          # Ensure non-Windows binaries are executable
+          chmod +x codex-cli/bin/codex-aarch64-apple-darwin || true
+          chmod +x codex-cli/bin/codex-x86_64-apple-darwin || true
+          chmod +x codex-cli/bin/codex-aarch64-unknown-linux-musl || true
+          chmod +x codex-cli/bin/codex-x86_64-unknown-linux-musl || true
+          chmod +x codex-cli/bin/codex-aarch64-unknown-linux-gnu || true
+          chmod +x codex-cli/bin/codex-x86_64-unknown-linux-gnu || true
+
+      - name: Setup Node.js 22
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: pnpm
+          registry-url: https://registry.npmjs.org
+
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: 10.8.1
+
+      - name: Install deps
+        run: pnpm install --frozen-lockfile
+
+      - name: Build @generaltranslation/codex
+        run: pnpm --filter @generaltranslation/codex run build
+
+      - name: Create Release PR or Publish to npm
+        id: changesets
+        uses: changesets/action@v1
+        with:
+          publish: pnpm run release
+          commit: "[ci] release"
+          title: "[ci] release"
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
+
+      - name: Publish to GitHub Packages (GPR)
+        if: steps.changesets.outputs.published == 'true'
+        working-directory: codex-cli
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          npm publish --registry https://npm.pkg.github.com

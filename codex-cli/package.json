@@ -22,6 +22,7 @@
   },
   "scripts": {
     "build": "tsc",
+    "release": "npm run build && npm publish",
     "release:alpha": "npm run build && npm publish --tag alpha --access public",
     "release:beta": "npm run build && npm publish --tag beta --access public",
     "release:latest": "npm run build && npm publish --tag latest --access public"
