@@ -3,7 +3,7 @@
  */
 
 // Re-export everything from the main SDK module
-export * from "../../../codex-sdk/src/sdk.js";
+export * from "../../../codex-sdk/dist/sdk.js";
 
 // Re-export everything from the types module
-export * from "../../../codex-sdk/src/types.js";
+export * from "../../../codex-sdk/dist/types.js";

@@ -6,11 +6,14 @@
     "codex": "bin/codex.js"
   },
   "type": "module",
+  "engines": {
+    "node": ">=20"
+  },
   "exports": {
     ".": "./src/sdk/index.js"
   },
-  "engines": {
-    "node": ">=20"
+  "dependencies": {
+    "@generaltranslation/codex": "^0.0.2"
   },
   "files": [
     "bin",

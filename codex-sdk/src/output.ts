@@ -10,7 +10,7 @@ async function parseStdout(): Promise<void> {
     process.stdin.on("end", () => resolve(data.trim()));
     process.stdin.on("error", reject);
   });
-
+  
   if (!input) {
     process.exitCode = 1;
     return;
