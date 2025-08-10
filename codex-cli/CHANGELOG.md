@@ -1,5 +1,11 @@
 # @generaltranslation/codex
 
+## 0.0.7
+
+### Patch Changes
+
+- bcbd789: Refactor CLI execution from js to ts
+
 ## 0.0.6
 
 ### Patch Changes
