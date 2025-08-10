@@ -12,7 +12,7 @@ import { query } from "@openai/codex";
 // export OPENAI_API_KEY="sk-..."
 
 for await (const event of query({
-  prompt: "Explain what JavaScript's Intl object does and write 3 example uses",
+  prompt: "Explain what the JavaScript Intl object does and write 3 example uses",
 })) {
   if (event.msg.type === "agent_message") {
     console.log(event.msg.message);
@@ -185,13 +185,11 @@ type FileChange =
 
 ## Authentication
 
-**Only** API key authentication is supported.
+Only API key authentication is supported.
 
 ```bash
 export OPENAI_API_KEY="sk-..."
 ```
-
-If the environment variable is not set, the SDK will throw an error before launching Codex.
 
 ---
 
