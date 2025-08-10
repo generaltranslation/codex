@@ -135,18 +135,21 @@ jobs:
           set -euo pipefail
           mkdir -p codex-cli/bin
           shopt -s nullglob
-          cp bin-artifacts/x86_64-unknown-linux-musl/codex-x86_64-unknown-linux-musl codex-cli/bin/codex-x86_64-unknown-linux-musl
+          cp bin-artifacts/aarch64-apple-darwin/codex-aarch64-apple-darwin codex-cli/bin/codex-aarch64-apple-darwin
           cp bin-artifacts/aarch64-unknown-linux-musl/codex-aarch64-unknown-linux-musl codex-cli/bin/codex-aarch64-unknown-linux-musl
           cp bin-artifacts/x86_64-apple-darwin/codex-x86_64-apple-darwin codex-cli/bin/codex-x86_64-apple-darwin
-          cp bin-artifacts/aarch64-apple-darwin/codex-aarch64-apple-darwin codex-cli/bin/codex-aarch64-apple-darwin
           cp bin-artifacts/x86_64-pc-windows-msvc/codex-x86_64-pc-windows-msvc.exe codex-cli/bin/codex-x86_64-pc-windows-msvc.exe
+          cp bin-artifacts/x86_64-unknown-linux-musl/codex-x86_64-unknown-linux-musl codex-cli/bin/codex-x86_64-unknown-linux-musl
+
           # Ensure non-Windows binaries are executable
           chmod +x codex-cli/bin/codex-aarch64-apple-darwin || true
           chmod +x codex-cli/bin/codex-x86_64-apple-darwin || true
           chmod +x codex-cli/bin/codex-aarch64-unknown-linux-musl || true
           chmod +x codex-cli/bin/codex-x86_64-unknown-linux-musl || true
-          chmod +x codex-cli/bin/codex-aarch64-unknown-linux-gnu || true
-          chmod +x codex-cli/bin/codex-x86_64-unknown-linux-gnu || true
+          chmod +x codex-cli/bin/codex-x86_64-pc-windows-msvc.exe || true
+
+          # Delete bin-artifacts
+          rm -rf bin-artifacts
 
       - name: Setup Node.js
         uses: actions/setup-node@v4
