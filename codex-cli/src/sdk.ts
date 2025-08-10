@@ -1,8 +1,6 @@
 import { SDKOutputEvent, Options } from "./types.js";
 import { spawn } from "child_process";
-import path from "path";
-import { fileURLToPath } from "url";
-import fs from "fs";
+import { resolveCodexBinary, ensureExecutable } from "./utils.js";
 
 export { SDKOutputEvent, Options };
 
@@ -69,42 +67,6 @@ class AsyncQueue<T> implements AsyncIterable<T> {
         throw item;
       }
       yield item as T;
-    }
-  }
-}
-
-function resolveCodexBinary(): string {
-  const __filename = fileURLToPath(import.meta.url);
-  const __dirname = path.dirname(__filename);
-  const { platform, arch } = process;
-
-  let triple: string | null = null;
-  if (platform === "darwin")
-    triple = arch === "arm64" ? "aarch64-apple-darwin" : "x86_64-apple-darwin";
-  else if (platform === "linux" || platform === "android")
-    triple =
-      arch === "arm64"
-        ? "aarch64-unknown-linux-musl"
-        : "x86_64-unknown-linux-musl";
-  else if (platform === "win32") triple = "x86_64-pc-windows-msvc.exe";
-
-  if (triple) {
-    const bin = path.join(__dirname, "..", "bin", `codex-${triple}`);
-    if (fs.existsSync(bin)) return bin;
-  }
-  return "codex"; // fall back to PATH if needed
-}
-
-function ensureExecutable(p: string) {
-  try {
-    fs.accessSync(p, fs.constants.X_OK);
-  } catch {
-    try {
-      fs.chmodSync(p, 0o755);
-    } catch (e) {
-      throw new Error(
-        `Codex binary not executable: ${p}. Try: chmod +x "${p}"`,
-      );
     }
   }
 }

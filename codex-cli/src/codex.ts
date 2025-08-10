@@ -1,62 +1,7 @@
 #!/usr/bin/env node
 // Unified entry point for the Codex CLI.
 
-import path from "path";
-import { fileURLToPath } from "url";
-
-// __dirname equivalent in ESM
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = path.dirname(__filename);
-
-const { platform, arch } = process;
-
-let targetTriple = null;
-switch (platform) {
-  case "linux":
-  case "android":
-    switch (arch) {
-      case "x64":
-        targetTriple = "x86_64-unknown-linux-musl";
-        break;
-      case "arm64":
-        targetTriple = "aarch64-unknown-linux-musl";
-        break;
-      default:
-        break;
-    }
-    break;
-  case "darwin":
-    switch (arch) {
-      case "x64":
-        targetTriple = "x86_64-apple-darwin";
-        break;
-      case "arm64":
-        targetTriple = "aarch64-apple-darwin";
-        break;
-      default:
-        break;
-    }
-    break;
-  case "win32":
-    switch (arch) {
-      case "x64":
-        targetTriple = "x86_64-pc-windows-msvc.exe";
-        break;
-      case "arm64":
-        // We do not build this today, fall through...
-      default:
-        break;
-    }
-    break;
-  default:
-    break;
-}
-
-if (!targetTriple) {
-  throw new Error(`Unsupported platform: ${platform} (${arch})`);
-}
-
-const binaryPath = path.join(__dirname, "..", "bin", `codex-${targetTriple}`);
+import { resolveCodexBinary, ensureExecutable } from "./utils.js";
 
 // Use an asynchronous spawn instead of spawnSync so that Node is able to
 // respond to signals (e.g. Ctrl-C / SIGINT) while the native binary is
@@ -64,6 +9,9 @@ const binaryPath = path.join(__dirname, "..", "bin", `codex-${targetTriple}`);
 // and guarantees that when either the child terminates or the parent
 // receives a fatal signal, both processes exit in a predictable manner.
 const { spawn } = await import("child_process");
+
+const binaryPath = resolveCodexBinary();
+ensureExecutable(binaryPath);
 
 const child = spawn(binaryPath, process.argv.slice(2), {
   stdio: "inherit",
@@ -83,7 +31,7 @@ child.on("error", (err) => {
 // gracefully. In the handler we temporarily disable the default behavior of
 // exiting immediately; once the child has been signaled we simply wait for
 // its exit event which will in turn terminate the parent (see below).
-const forwardSignal = (signal) => {
+const forwardSignal = (signal: any) => {
   if (child.killed) {
     return;
   }
@@ -103,7 +51,11 @@ const forwardSignal = (signal) => {
 // Wrap the lifetime of the child process in a Promise so that we can await
 // its termination in a structured way. The Promise resolves with an object
 // describing how the child exited: either via exit code or due to a signal.
-const childResult = await new Promise((resolve) => {
+const childResult = await new Promise<{
+  type: "signal" | "code";
+  signal?: string;
+  exitCode?: number;
+}>((resolve) => {
   child.on("exit", (code, signal) => {
     if (signal) {
       resolve({ type: "signal", signal });
@@ -120,4 +72,3 @@ if (childResult.type === "signal") {
 } else {
   process.exit(childResult.exitCode);
 }
-
