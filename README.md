@@ -3,6 +3,23 @@
 A TypeScript SDK that lets you **run OpenAI Codex CLI programmatically** using the **same API style as the Claude Code TypeScript SDK** (e.g. `query()` returning an async iterator).
 Under the hood, it shells out to the `codex` binary, streams output, and yields structured events.
 
+## Quickstart
+
+```ts
+import { query } from "@openai/codex";
+
+// Ensure you've set your API key:
+// export OPENAI_API_KEY="sk-..."
+
+for await (const event of query({
+  prompt: "Explain what src/utils/date.ts does and write 3 unit tests",
+})) {
+  if (event.msg.type === "agent_message") {
+    console.log(event.msg.message);
+  }
+}
+```
+
 ---
 
 ## Why?
@@ -33,25 +50,6 @@ npm install @openai/codex
 pnpm add @openai/codex
 # or
 yarn add @openai/codex
-```
-
----
-
-## Quick start
-
-```ts
-import { query } from "@openai/codex";
-
-// Ensure you've set your API key:
-// export OPENAI_API_KEY="sk-..."
-
-for await (const event of query({
-  prompt: "Explain what src/utils/date.ts does and write 3 unit tests",
-})) {
-  if (event.msg.type === "agent_message") {
-    console.log(event.msg.message);
-  }
-}
 ```
 
 ---
