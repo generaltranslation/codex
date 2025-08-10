@@ -1,6 +1,6 @@
 {
   "name": "@generaltranslation/codex",
-  "version": "0.0.4-alpha.1",
+  "version": "0.0.4",
   "license": "Apache-2.0",
   "bin": {
     "codex": "bin/codex.js"
