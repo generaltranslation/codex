@@ -287,6 +287,20 @@ Common event types:
 
 <!-- Begin ToC -->
 
+- [Why?](#why)
+- [Requirements](#requirements)
+- [Install](#install)
+- [Quick start](#quick-start)
+- [API](#api)
+  - [`query(args): AsyncGenerator<SDKOutputEvent>`](#queryargs-asyncgeneratorsdkoutputevent)
+- [Option mapping (SDK → Codex CLI)](#option-mapping-sdk--codex-cli)
+- [Authentication](#authentication)
+- [Examples](#examples)
+  - [Fully non-interactive](#fully-non-interactive)
+  - [With profile and config overrides](#with-profile-and-config-overrides)
+  - [Using fullAuto for automatic execution](#using-fullauto-for-automatic-execution)
+- [Error handling](#error-handling)
+- [Streaming model](#streaming-model)
 - [Quickstart](#quickstart)
   - [Installing and running Codex CLI](#installing-and-running-codex-cli)
   - [Using Codex with your ChatGPT plan](#using-codex-with-your-chatgpt-plan)
