@@ -25,7 +25,7 @@ for await (const event of query({
 ## Why?
 
 * **Drop-in style**: Mirrors the Claude Code SDK's `query()` API so you can reuse patterns.
-* **Programmatic-only auth**: Authenticate via `OPENAI_API_KEY` environment variable — no ChatGPT plan login flow.
+* **Programmatic-only auth**: Authenticate via `OPENAI_API_KEY` environment variable -- no ChatGPT plan login flow.
 * **Full Codex CLI control**: Pass sandbox, approval, and model options directly from code.
 * **Cross-platform**: Works anywhere the Codex CLI is supported.
 
@@ -165,7 +165,7 @@ type FileChange =
 
 ---
 
-## Option mapping (SDK → Codex CLI)
+## Option mapping (SDK to Codex CLI)
 
 | SDK option                           | Codex CLI flag                                    |
 | ------------------------------------ | ------------------------------------------------- |
@@ -241,9 +241,9 @@ for await (const event of query({
 
 ## Error handling
 
-* Non-zero exit code ⇒ process rejection
-* Aborted requests ⇒ `AbortError` thrown
-* Missing `codex` binary ⇒ process spawn error
+* Non-zero exit code -> process rejection
+* Aborted requests -> `AbortError` thrown
+* Missing `codex` binary -> process spawn error
 
 ---
 
