@@ -4,6 +4,12 @@
 
 ### Patch Changes
 
+- b735788: Fix CI
+
+## 0.0.8
+
+### Patch Changes
+
 - 4eccacc: Fix changesets CI
 
 ## 0.0.7
