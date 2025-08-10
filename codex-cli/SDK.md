@@ -7,21 +7,21 @@
 
 ## Why?
 
-* **Drop-in style**: Mirrors the Claude Code SDK's `query()` API so you can reuse patterns.
-* **Programmatic-only auth**: Authenticate via `OPENAI_API_KEY` environment variable — no ChatGPT plan login flow.
-* **Full Codex CLI control**: Pass sandbox, approval, and model options directly from code.
-* **Cross-platform**: Works anywhere the Codex CLI is supported.
+- **Drop-in style**: Mirrors the Claude Code SDK's `query()` API so you can reuse patterns.
+- **Programmatic-only auth**: Authenticate via `OPENAI_API_KEY` environment variable — no ChatGPT plan login flow.
+- **Full Codex CLI control**: Pass sandbox, approval, and model options directly from code.
+- **Cross-platform**: Works anywhere the Codex CLI is supported.
 
 ---
 
 ## Requirements
 
-* Node.js 18+
-* [OpenAI Codex CLI](https://github.com/openai/codex) installed and on your PATH:
+- Node.js 18+
+- [OpenAI Codex CLI](https://github.com/openai/codex) installed and on your PATH:
 
-  * `npm install -g @openai/codex`
-  * `brew install codex`
-  * Or download a binary from [GitHub Releases](https://github.com/openai/codex/releases)
+  - `npm install -g @openai/codex`
+  - `brew install codex`
+  - Or download a binary from [GitHub Releases](https://github.com/openai/codex/releases)
 
 ---
 
@@ -152,8 +152,8 @@ type EventMsg =
   | SDKExecCommandEnd
   | SDKApplyPatchApprovalRequest;
 
-// Note: This is a subset of available event types. 
-// See types.ts for the complete list including reasoning, MCP tool calls, 
+// Note: This is a subset of available event types.
+// See types.ts for the complete list including reasoning, MCP tool calls,
 // patch operations, and more.
 
 // Utility types
@@ -167,21 +167,21 @@ type FileChange =
 
 ---
 
-## Option mapping (SDK → Codex CLI)
+## Option mapping (SDK -> Codex CLI)
 
-| SDK option                           | Codex CLI flag                                    |
-| ------------------------------------ | ------------------------------------------------- |
-| `model`                              | `--model`                                         |
-| `sandbox`                            | `--sandbox`                                       |
-| `profile`                            | `--profile`                                       |
-| `config`                             | `--config`                                        |
-| `cd`                                 | `--cd`                                            |
-| `fullAuto`                           | `--full-auto`                                     |
+| SDK option                             | Codex CLI flag                               |
+| -------------------------------------- | -------------------------------------------- |
+| `model`                                | `--model`                                    |
+| `sandbox`                              | `--sandbox`                                  |
+| `profile`                              | `--profile`                                  |
+| `config`                               | `--config`                                   |
+| `cd`                                   | `--cd`                                       |
+| `fullAuto`                             | `--full-auto`                                |
 | `dangerouslyBypassApprovalsAndSandbox` | `--dangerously-bypass-approvals-and-sandbox` |
-| `skipGitRepoCheck`                   | `--skip-git-repo-check`                           |
-| `color`                              | `--color`                                         |
-| `outputLastMessage`                  | `--output-last-message`                           |
-| `image`                              | `--image`                                         |
+| `skipGitRepoCheck`                     | `--skip-git-repo-check`                      |
+| `color`                                | `--color`                                    |
+| `outputLastMessage`                    | `--output-last-message`                      |
+| `image`                                | `--image`                                    |
 
 ---
 
@@ -245,9 +245,9 @@ for await (const event of query({
 
 ## Error handling
 
-* Non-zero exit code ⇒ process rejection
-* Aborted requests ⇒ `AbortError` thrown
-* Missing `codex` binary ⇒ process spawn error
+- Non-zero exit code ⇒ process rejection
+- Aborted requests ⇒ `AbortError` thrown
+- Missing `codex` binary ⇒ process spawn error
 
 ---
 
@@ -259,6 +259,7 @@ The SDK yields `SDKOutputEvent` objects containing:
 2. `msg`: The actual event payload with a `type` discriminator
 
 Common event types:
+
 - `agent_message`: Final agent response text (`message: string`)
 - `agent_message_delta`: Streaming text chunks (`delta: string`)
 - `exec_command_begin`: Command execution started (`command: string[], cwd: string`)

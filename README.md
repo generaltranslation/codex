@@ -287,13 +287,13 @@ Common event types:
 
 <!-- Begin ToC -->
 
+- [Quickstart](#quickstart)
 - [Why?](#why)
 - [Requirements](#requirements)
 - [Install](#install)
-- [Quick start](#quick-start)
 - [API](#api)
   - [`query(args): AsyncGenerator<SDKOutputEvent>`](#queryargs-asyncgeneratorsdkoutputevent)
-- [Option mapping (SDK → Codex CLI)](#option-mapping-sdk--codex-cli)
+- [Option mapping (SDK to Codex CLI)](#option-mapping-sdk-to-codex-cli)
 - [Authentication](#authentication)
 - [Examples](#examples)
   - [Fully non-interactive](#fully-non-interactive)
