@@ -1,5 +1,11 @@
 # @generaltranslation/codex
 
+## 0.0.8
+
+### Patch Changes
+
+- 4eccacc: Fix changesets CI
+
 ## 0.0.7
 
 ### Patch Changes
