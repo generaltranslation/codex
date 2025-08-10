@@ -1,5 +1,7 @@
 import { SDKOutputEvent, Options } from "./types.js";
 import { spawn } from "child_process";
+import path from "path";
+import { fileURLToPath } from "url";
 
 export { SDKOutputEvent, Options };
 
@@ -115,7 +117,12 @@ export async function* query({
     args.push("--model", options.model);
   }
 
-  const child = spawn("codex", args, {
+  // Get the path to the codex.js binary
+  const __filename = fileURLToPath(import.meta.url);
+  const __dirname = path.dirname(__filename);
+  const binaryPath = path.join(__dirname, "..", "bin", "codex.js");
+
+  const child = spawn("node", [binaryPath, ...args], {
     stdio: ["ignore", "pipe", "pipe"],
     env: process.env,
     signal: abortController.signal,
