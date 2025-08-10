@@ -30,5 +30,8 @@
   "repository": {
     "type": "git",
     "url": "git+https://github.com/openai/codex.git"
+  },
+  "devDependencies": {
+    "typescript": "^5.9.2"
   }
 }
