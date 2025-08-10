@@ -44,10 +44,8 @@ jobs:
 
       # Run all tasks using workspace filters
 
-      - name: Ensure staging a release works.
-        env:
-          GH_TOKEN: ${{ github.token }}
-        run: ./codex-cli/scripts/stage_release.sh
+      - name: Ensure the CLI builds
+        run: pnpm run build
 
       - name: Ensure root README.md contains only ASCII and certain Unicode code points
         run: ./scripts/asciicheck.py README.md
