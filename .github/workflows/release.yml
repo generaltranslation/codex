@@ -14,44 +14,7 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
-  check-for-release:
-    name: Check if release is needed
-    runs-on: ubuntu-latest
-    outputs:
-      published: ${{ steps.changesets.outputs.published }}
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v4
-
-      - name: Setup Node.js
-        uses: actions/setup-node@v4
-        with:
-          node-version: 22
-
-      - name: Setup pnpm
-        uses: pnpm/action-setup@v4
-        with:
-          version: 10.8.1
-
-      - name: Install deps
-        run: pnpm install --frozen-lockfile
-
-      - name: Build @generaltranslation/codex
-        run: pnpm --filter @generaltranslation/codex run build
-
-      - name: Create Release PR or Publish to npm
-        id: changesets
-        uses: changesets/action@v1
-        with:
-          commit: "[ci] release"
-          title: "[ci] release"
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
-
   rust-test:
-    needs: check-for-release
-    if: needs.check-for-release.outputs.published == 'true'
     name: Rust tests
     runs-on: ubuntu-24.04
     defaults:
@@ -79,8 +42,6 @@ jobs:
         run: cargo test --workspace --all-targets --all-features
 
   rust-build:
-    needs: [check-for-release, rust-test]
-    if: needs.check-for-release.outputs.published == 'true'
     name: Build ${{ matrix.target }}
     runs-on: ${{ matrix.runner }}
     timeout-minutes: 30
@@ -154,8 +115,7 @@ jobs:
           path: codex-rs/dist/${{ matrix.target }}/*
 
   publish:
-    needs: [check-for-release, rust-build]
-    if: needs.check-for-release.outputs.published == 'true'
+    needs: rust-build
     name: Publish codex-cli to npm and GitHub Packages
     runs-on: ubuntu-latest
 
